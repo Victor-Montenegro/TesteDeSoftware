@@ -1,0 +1,408 @@
+TOPICOS
+
+	Frameworks ---> Escrever os testes 
+	
+	Nomenclaturas --> Recomendacoes de como escrever o nome do seu teste
+	
+	Ferramentas --> Ajuda a ter mais performace, organizações e acetividade na escrita
+	
+	Escritas de testes ---> Aprender cada tecnica especifica, para saber o que exatamente precisa fazer e como fazer 
+	
+	Features do framework de testes --> Dentro do framework de teste, vai aprender todas as features(recursos) por tras dele, para saber utiliza-lo de forma avançada 
+	
+	Execução no VS,VsCode
+	
+	Mock --> Como ele ajuda na execução na escrita de teste
+	
+	Automock --> Aprende de forma facil de escrever os mocks
+	
+	Fixture --> Recurso importante para economizar linhas de codigo
+	
+	Geracao de dados ---> Utilizando um framework para gerar dados humanos nos nossos testes 
+	
+	Fluent Assertions --> Validações dos nossos testes 
+	
+	
+	
+
+
+-------- Frameworks Para teste de Unidade -------
+
+		
+		MSTest --> Propria microsoft
+		
+		NUnit ---> Uma versao do JUnit para o .Net
+		
+		XUnit ---> Que o irmao mais novo do NUnit
+		
+		
+	
+	MSTeste 
+		
+		Caracteristicas
+			Open source
+	
+		
+	
+	NUnit
+	
+		Portabilidade para JUnit(Que era par java)
+		
+	XUnit
+		
+		Escrito pelos criadores do NUnit
+		
+		Compativel com VIsual Studio
+		
+		Utilizando pelo time de desenvolvimento do .Net core e ASP.NET 
+		
+		Intalacao do framework
+			Install-Package xunit
+			
+			fazer com que o visual studio reconheca o xunit dos teste
+			Install-Package xunit.runner.visualstudio
+		
+		site: xunit.net
+
+
+
+---------------------- UTILIZANDO XUnit --------------------------------------
+
+	PADROES - PARA ORGANIZAÇÃO E NOMENCLATURA PARA OS TESTE DE UNIDADE
+	
+		
+		AAA - Arrange,Act, Assert - Padrao
+			
+			[Fact]
+			public async Task MiddlewareFilter_SetsMiddlewateFilterFeature_OnExecution()
+			{
+				// Arrange | Organizar | Preparar | Manipular
+				//  
+				//  Esse codigo todo está sendo trabalhado para gerar um objeto 
+				// 	Onde esse objeto está no ponto certo( com as instancias, informações que precisa carregar)
+				// 	para o "Act"
+				Task requestDelegate(HttpContext context) => Task.FromResult(true);
+				var middlewareFilter = new MiddlewareFilter(requestDelegate);
+				var httpContext = new DefaultHttpContext();
+				var resourceExecutingContext = GetResourceExecutingContext(httpContext);
+				var resouceExecutionDelegate = GetResourceExecutionDelegate(httpContext);
+				
+				// Act | Atuação
+				// 	É o metodo na qual voce está testando 
+				// 	O metodo o qual está realizando a analise do comportamento dele   
+				// 	Geralmente e feito numa linha so, pois está fazendo uma chamda desse metodo
+				await middlewareFilter.OnResourceExecutingAsync(resourceExecutingContext, resouceExecutionDelegate);
+				
+				// Assert | Acessão 
+				// Apos o "Act" iremos realizar a validação, ou seja
+				// validar se os resultados gerados atraves da chamda desse metodo
+				// confere com a intenção do teste 
+				var feature = resourceExecutingContext.HttpContext.Features.Get<IMiddlewareFilterFeature>();
+				Assert.NotNull(feature);
+				Assert.Same(resourceExecutingContext, feature.ResourceExecutingContext);
+				Assert.Same(resouceExecutingDelegate, feature.ResourceExecutionDelegate);
+				
+			
+			}
+			
+			OBS: Como os testes de unidade não são muito claros, devemos realizar a organização do nosso codigo em tres partes
+			Arrange --> Act ---> Assert, ou seja, construir nosso testes em blocos, onde devemos colocar toda a construção do nosso
+			objeto em um bloco, realizar a chamada no metodo a qual será avaliado e por fim realizar as validacao, as quais necessitamos 
+			para termos o resultado esperado daquele teste.
+		
+		
+		
+		NOMENCLATURA DE TESTE DE UNIDADE
+		
+			Informa o que exatamente aquele teste faz
+			
+			OPCOES
+				ObjetoEmTeste_MetodoComportamentoEmTeste_ComportamentoEsperado 
+				--> Utilizando quando não temos necessariamente um estado a ser observado
+				Utilizando em metodos mais simples
+					EX.: Pedido_AdicionarPedidoItem_DeveIncrementarUnidadesSeItemJaExiste
+						Estoque_RetirarItem_DeveEnviarEmailSeAbaixoDe10Unidades
+				
+				MetodoEmTeste_EstadoEmTeste_ComportamentoEsperado
+					Metodos mais complexos, devemos falar em qual situação aquilo deve acontecer
+					De qual metodo eu estou trabalhando e o comportamento que estou esperando 
+						Ex.: AdicionarPedidoItem_ItemExistenteCarrinho_DeveIncrementarUnidadesDoItem
+							RetirarItemEstoque_EstoqueAbaixoDe10Unidades_DeveEnviarEmailDeAviso
+							
+		
+		
+			EXERCICIOS
+			
+				AddOrderItem_AdicionarUmItemExistenteNoPedido_ExcessaoDeItemRepetido()
+		
+		
+	MOCK
+		O QUE E UM MOCK
+			Objetos Mock, objetos simulados ou simplesmente Mock são objetos que simulam o comportamento de objetos reais
+			de forma controlada.
+			
+			São normalmente criados para testar o comportamento de outros objetos. Em outras palavras, os objetos mock são
+			"falsos" que simulam o comportamento de uma classe ou objeto "real" para que possamos focar o teste na unidade a ser
+			testada.
+			
+			Uma vantagem do Mock é que o objeto simulado pode ser criado denamicamente atraves de um framework de mock
+			e poupando o desenvolvedor ter que criar uma classe fisica para simular aquele objeto. 
+			
+			Uma clase fisica que simula o objeto costuma ser chamada de Fake, mas na teoria é um mock, a diferença é que foi
+			criada manualmente.
+			
+		Framework MOQ
+			
+			Realize mock com facilidade
+			
+			Compativel com Visual Studio
+			
+			Utilizando pelo time de desenvolvedores do .NET Core e ASP.NET
+			
+			Instalação 
+				Install-Package Moq
+			
+
+
+
+
+
+--------------------PRATICA--------------------
+	
+	Name Project: xUnit teste Project
+	
+		Pacotes necessarios para realizar os testes
+			xunit --> O framework utiliza
+			xunit.runner.visualstudio ---> O visual studio utiliza para reconhece como teste de unidade
+			
+		OBS: Qualquer class library pode se torna projeto de testes, basta realizar a instação dos dois pacotes sitados em cima
+		
+		
+		1.1 Os testes sempre estarão dentro de uma classe só para testes
+				
+				Não e uma classe de negocio e de testes juntos : EVITE SEMPRE JUNTAR OS DOIS
+				
+				[Fact] Todos os metodos da classe de testes são atribuido o atributo [Fact], pode sinaliza que aquele metodo e um teste de unidade
+				
+				Public e void: todos os testes de unidades seram publicos e vão seram void
+				
+				Async: Pode ser utilizado, mas não e uma necessidade. 
+				
+				EXEMPLO: 
+					usign Xunit;
+					
+					namespace Demo.Tests;
+					
+					public class UnitTest{
+						
+						[Fact]
+						public void Test(){ }
+					
+					}
+					
+			
+			OBS: Sempre realize a criação de um camada de teste para uma camada especifica. NUNCA DEIXE TESTES DE VARIAS CAMADAS EM APENAS UMA CAMADA DE TESTE
+		
+			Tendo uma classe basica Calculadora e com seus metodos de Somar() e Dividir(), teremos que realizar os devidos testes
+			
+				[Fact]
+					Ao realizar a criação de um teste utilizando o fact(Tambem podemos entender como Fato), testamos o metodo Soma(),
+					passando os valores de 2 + 2 = 4, e esperemas o Fato, onde 2 + 2 é igual a 4. 
+				
+				[Theory]
+					Não é por quer o nosso metodo Somar() retornou o valor esperado da soma 2 + 2 = 4, que nosso metodo está totalmente
+					correto, devemos realizar  a criação de outros necessarios de somas, so que nao e uma boa pratica criar um teste de
+					unidade para cada situação.
+						
+						Por isso iremos utilizar o : [InlineData(parametro1,parametro2,..,parametro10)] --> Esses parametros correspondem a assinatura do metodo
+						
+							Exemplo:
+								[Theory]
+								[InlineData(1,1,2)] --> E possivel realizando a instação de pacotes, colocar valores que podem vim de um banco de dados, arquivos
+								[InlineData(1,2,3)]
+								public void Calculadora_Somar_RetornarResultadosSoma(double v1, double v2, double total)
+								{
+									//Arrange
+									
+									//Act
+
+									//Assert
+								}
+		
+		
+		
+			
+		1.2 ASSERT
+			
+			Assert.Equal - Complex : Serve como coringa para quase todas as verificações :> String | number 
+				
+				Assert.Equal com IgnoreCase - String : Assert.Equal(valorEsperado,valor1, IgnoreCase : true);
+				
+				Assert.Equal com Precision - Number : Dará mais precisao ao valor, ou seja, arrendondará (EX: NORMAL(3,33 + 2,32 = 5,65) PRecisao(1)(3,33 + 2,32 = 5,7)) :> Assert.Equal(ValorEsperado,valor1, Precision : 1);
+			
+			Assert.NotEqual - Complex : O contrario do Assert.Equal
+				
+				Assert.Equal com Precision - Number : O contario do Assert.Equal com Precision;
+			
+			Assert.Contains - String  : Como proprio nome irá verificar na cadeia de caracteres se tem o valor passado :> Assert.Contains(valorEsperado,valor)
+			
+			Assert.StartsWith - String : Irá verificar se na cadeia de caractere começa o o valor esperado :> Assert.StartsWith(valorEsperado,valor)
+			
+			Assert.EndsWith - String : O contrario do StartsWith, verificar o final da cadeia de caracteres :> Assert.EndsWith(valorEsperado,valor);
+			
+			Assert.Matches - String : A possbilidade de utilizar expressões regulares para realizazr os testes :> Assert.Matches(ExpressaoRegular,valor);
+			
+			
+			Assert.False - bool : Atraves de uma condicional, realizará o teste se retornará false para atender :> Assert.False(string.IsNullOrEmpty(""));
+			
+			Assert.True - bool : Atraves de uma condicional, realizará o teste se retornará true para atender :> Assert.True(true)
+			
+			Assert.Null - Complex : Validará se aquele objeto está nulo :> Assert.Null(null);
+			
+			Assert.IsType<T> - Objeto : Validará se aquele objeto passado e do tipo especificado
+			
+			Assert.IsAssignableFrom<T> - Objecto : Validará se aquele objeto passado, realiza a herança com um tipo especificado
+			
+			
+			Assert.InRange() - int : Validará se um valor está entre o range especificado(O valor maior entra dentro do range) :> Assert.InRange(valorPassado,0,500);
+			Assert.NotInRange() - int : Validará se um valor não está entre o range especificado(O valor maior entra dentro do range) :> Assert.InRange(valorPassado,0,500);
+			
+	
+		1.3 Traits
+			
+			E uma forma de catalogar seus testes com base no seu criterio de organização 
+				
+				Funcionamento:
+					
+					1 - Deve colocar o atributo Trait("NomeDaCategoria","Item da categoria")
+					2 - No Test explorer retire a marcação por hierarquia, se caso nao aparecer seus traits de um build
+					3 - com botao direito voce pode selecionar o group by e utilizar por traits
+			
+			Tambem e possivel realizar a mudança dos nomes dos tests 
+				
+				Funciomento:
+					1 - No atributo [Fact] basta utilizar --> [Fact(DisplayName = "O nome do teste na qual quer aparecer no Test Explorer")]
+					
+		1.4 Fixture
+			
+			Sempre vai existir uma situação no nosso tests que vamos ter que instanciar varias vezes algum objeto, e muitas vezes e um objeto
+			igual/semelhante para cada metodo. E realizar esse instanciamento em todo metodo se torna algo repetitivo e trabalhoso.
+			
+				Solução usando Construtor
+					Existe algumas soluções para que voce nao precise realizar esse instancimento todas as vezes, uma delas é utilizando
+					o proprio construtor da class de tests:
+						
+						EX:
+							public class ClienteTeste{
+							
+								public Cliente Cliente;
+								
+								public ClienteTeste(){
+									Cliente = new Cliente(1,"joao","victor",19,true)
+								}
+								
+								[Fact]
+								public void Cliente_NovoCliente_Valido(){
+									//arrange
+									Cliente cliente = Cliente;
+									
+									//Act
+									var resultado  = cliente.EhValido();
+									
+									//Assert
+									Assert.True(resultado);
+								}
+							}
+					
+					So que existe um pequeno detalhe ao utilizar essa solução, ao utilizar o construtor de uma class teste, aquele objeto
+					será instanciado novamente para cada caso/metodo daquela classe teste, ou seja, caso voce queira manter o mesmo estado daquele
+					objeto para todos os metodos de testes para aquela classe teste, isso nao sera possivel.
+					
+					
+				Solução utilizando fixture 
+					
+					Utilizando um dos recursor do framework de teste Xunit, o fixture e uma solução para compartilhar a construção de um objeto
+					que é bastante utilizado em uma determinada coleção de testes.
+					
+					E uma das vantagem de utlizar o fixture, é que ele mantem o mesmo estado daquele objeto para todo a coleção daquele determinado teste, ou seja
+					caso queira utilizar um banco em memoria e utilizar esses dados para toda a coleção sem ter que criar esse banco todas as vezes para cada metodo
+					, será possivel.
+						
+						EX:
+								
+									[Collection(nameof(ClienteCollection))]
+									public class ClienteCollection : ICollectionFixture<ClienteFixtureTests> { }    
+
+									public class ClienteFixtureTests : IDisposable
+									{
+										public Cliente ClienteValido()
+										{
+											Cliente cliente = new Cliente(Guid.NewGuid(), "João Victor", "Montenegro Rocha", DateTime.Now.AddYears(-30), "jvcmontenegro67@gmail.com", true, DateTime.Now);
+
+											return cliente;
+										}
+
+										public Cliente ClienteInvalido()
+										{
+											Cliente cliente = new Cliente(Guid.NewGuid(), "", "", DateTime.Now.AddYears(-30), "jvcmontenegro67@gmail.com", true, DateTime.Now);
+
+											return cliente;
+										}
+
+										public void Dispose()
+										{
+											throw new NotImplementedException();
+										}
+									}
+									
+									
+									
+									[Collection(nameof(ClienteCollection))]
+									public class ClienteTestsInvalido
+									{
+										private readonly ClienteFixtureTests _clienteFixtureTests;
+
+										public ClienteTestsInvalido(ClienteFixtureTests clienteFixtureTests)
+										{
+											_clienteFixtureTests = clienteFixtureTests;
+										}
+
+										[Fact]
+										public void Cliente_NovoCLiente_DeveRetornaClienteInvalido()
+										{
+											//Arrange
+											Cliente cliente = _clienteFixtureTests.ClienteInvalido();
+
+											//Act
+											var resultado = cliente.EhValido();
+
+											//Assert
+											Assert.NotEmpty(cliente.ValidationResult.Errors);
+											Assert.False(resultado);
+										}
+									}
+									
+									[Collection(nameof(ClienteCollection))]
+									public class ClienteTestsValido
+									{
+										private readonly ClienteFixtureTests _clienteFixtureTests;
+
+										public ClienteTestsValido(ClienteFixtureTests clienteFixtureTests)
+										{
+											_clienteFixtureTests = clienteFixtureTests;
+										}
+
+										[Fact]
+										public void Cliente_NovoCliente_DeveRetornaClienteValido()
+										{
+											//Arrange 
+											Cliente cliente = _clienteFixtureTests.ClienteValido();
+
+											//Act
+											var resultado = cliente.EhValido();
+
+											//Assert
+											Assert.Empty(cliente.ValidationResult.Errors);
+											Assert.True(resultado);
+										} 
+									}
