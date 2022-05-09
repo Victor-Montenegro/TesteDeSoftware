@@ -406,3 +406,16 @@ TOPICOS
 											Assert.True(resultado);
 										} 
 									}
+				
+				1.5 Ordenação de Testes
+					
+					Temos que ter uma observação muito importante quando falamos em ordenação de testes. 
+						
+						NUNCA ORDENE TESTE DE UNIDADE: Jamais devemos pensar em realizar a criação de testes de unidade com a perspectiva de ordenalos, pois isso irá gerar uma dependencia entres os testes, e assim
+						fazendo com que haja um acoplamento.
+						
+						Teste de integração/regressão: Já nessa duas situações poderá realizar a criação de teste com ordenação, pois pode ter situações onde deve ter uma ordenação para que o teste tenha logica e sentido:
+								Ex.: O teste de criação de um usuario deve vim antes do teste de login daquele usuario.
+						
+					Utilizando o proprio exemplo no simple do xUnit para realizar a ordenação dos testes. devemos nos atentar em certos pontos	
+						
