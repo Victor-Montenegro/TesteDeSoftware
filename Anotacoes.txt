@@ -417,5 +417,43 @@ TOPICOS
 						Teste de integração/regressão: Já nessa duas situações poderá realizar a criação de teste com ordenação, pois pode ter situações onde deve ter uma ordenação para que o teste tenha logica e sentido:
 								Ex.: O teste de criação de um usuario deve vim antes do teste de login daquele usuario.
 						
-					Utilizando o proprio exemplo no simple do xUnit para realizar a ordenação dos testes. devemos nos atentar em certos pontos	
+					Utilizando o proprio exemplo no simple do xUnit para realizar a ordenação dos testes. devemos nos atentar em certos pontos:
 						
+						Na classe deve ser passado esse cabeçalho
+												NameSpace do arquivo que e responsavel por fazer a ordenação
+						 [TestCaseOrderer("Features.Tests.PriorityOrderer", "Features.Tests")]
+																				NameSpace que vou aplicar a ordenação
+																				
+						
+						OBS: Pode se trabalhar com mais de 2 ou 3 classes de teste para realizar a ordenação entre elas 
+						
+			
+				1.6 Realizando a implementação de dados humanos
+					
+					Quando realizamos nossos testes de unidades, sempre nos deparamos com o testes de dados, e nem sempre podemos confiar em dados fixos no nossos codigo, pois dados mocados nunca ficarão proximos dos dados
+					que o usuario irá preencher
+						
+						Com isso iremos utilziar um framework chamado Bogus, onde ajuda na implementação mais proxima de dados humanos
+							
+							Juntamente com esse framework vamos utilizar a funcionalidade de fixture para realizar a criação de dados de forma ampla 
+								
+								EX:
+									
+										public Cliente GerarClienteValido()
+										{
+											var genero = new Faker().PickRandom<Name.Gender>();
+
+											Cliente clienteFake = new Faker<Cliente>("pt_BR")
+												.CustomInstantiator(f => new Cliente(
+														Guid.NewGuid(),
+														f.Name.FirstName(genero),
+														f.Name.LastName(genero),
+														f.Date.Past(80, DateTime.Now.AddYears(-18)),
+														string.Empty,
+														true,
+														f.Date.Past(10)
+													))
+												.RuleFor(c => c.Email, (f,c) => f.Internet.Email(c.Nome,c.Sobrenome));
+
+											return clienteFake;
+										}

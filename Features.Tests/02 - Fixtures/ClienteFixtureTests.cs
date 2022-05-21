@@ -4,7 +4,7 @@ using Xunit;
 
 namespace Features.Tests.Fixtures
 {
-    [Collection(nameof(ClienteCollection))]
+    [CollectionDefinition(nameof(ClienteCollection))]
     public class ClienteCollection : ICollectionFixture<ClienteFixtureTests> { }    
 
     public class ClienteFixtureTests : IDisposable
@@ -25,7 +25,6 @@ namespace Features.Tests.Fixtures
 
         public void Dispose()
         {
-            throw new NotImplementedException();
         }
     }
 }
