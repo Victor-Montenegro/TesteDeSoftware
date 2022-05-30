@@ -26,6 +26,21 @@ namespace Features.Tests
             //Assert
             Assert.Empty(cliente.ValidationResult.Errors);
             Assert.True(resultado);
-        } 
+        }
+
+        [Fact(DisplayName = "Cliente Invalido Bogus")]
+        [Trait("Categoria", "Cliente invalido Bogus")]
+        public void Cliente_NovoCliente_DeveRetornaClienteInvalido()
+        {
+            //Arrange
+            Cliente cliente = _clienteBogusFixtureTests.GerarClienteInvalido();
+            
+            //Act
+            var resultado = cliente.EhValido();
+            
+            //Assert
+            Assert.False(resultado);
+            Assert.NotEmpty(cliente.ValidationResult.Errors);
+        }
     }
 }

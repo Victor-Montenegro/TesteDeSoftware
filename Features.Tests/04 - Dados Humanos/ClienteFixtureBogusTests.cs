@@ -30,6 +30,24 @@ namespace Features.Tests
             return clienteFake;
         }
 
+        public Cliente GerarClienteInvalido()
+        {
+            var genero = new Faker().PickRandom<Name.Gender>();
+
+            Cliente cliente = new Faker<Cliente>("pt_BR")
+                .CustomInstantiator(f => new Cliente(
+                            Guid.NewGuid(),
+                            f.Name.FirstName(),
+                            f.Name.LastName(),
+                            f.Date.Past(17,DateTime.Now.AddYears(-1)),
+                            String.Empty,
+                            false,
+                            DateTime.Now
+                            ));
+
+            return cliente;
+        }
+
         public void Dispose()
         {
         }
