@@ -457,3 +457,36 @@ TOPICOS
 
 											return clienteFake;
 										}
+				
+				1.7 Trabalhando com Mock
+					
+					Como já foi dito anteriormente, mock são objetos simulados ou classes "falsas", com o intuito de simular alguma dependencia da classe que queremos realizar
+					o teste de unidade. trabalhando com mock, facilitará para o desenvolvedor, no sentido de concentrar o teste naquela classe, sem se preocupar com as dependencias.
+					
+						Utilizaremos o framework MOQ
+							
+							Para poder iniciar com os testes utilizando o MOQ devemos nos atentar a alguns procedimentos, iremos ver com os testes adiante.
+							
+							Quando queremos realizar a simulação de uma classe devemos prestar a atenção na seguinde sintaxe
+								
+								Esse instanciamento dessa simulação podemos notar que utilizamos o Mock passando aquela classe que queremos realizar a simulação
+								{
+									var clienteRepository = new Mock<IClienteRepository>();
+								}
+								O Mock retorna o proprio tipo dele, ou seja, existe varias ferramentas que podemos trabalhar em cima daquela simulação 
+								{	
+									imediator.Object => O mock retornará a propria representação do objeto que foi simulado
+								}	
+								O mock disponibiliza uma certa verificação se caso queremos verificar se aquele metodo da classe de simulação foi utilizado
+								{	
+									clienteRepository.Verify(r => r.Adicionar(cliente),Times.Once);
+								}
+								Uma das ferramentas mas incrivel e você literalmente simular o retorno de um determinado metodo daquela classe fake, ou seja, iremos utilizar dois
+								conhecimento para realizar um teste mais proximo da realizade e acertivo.
+								{	
+									clienteRepository.Setup(s => s.ObterTodos())
+														.Returns(_clienteFixtureTests.ObterClienteVariados());
+								} Ao utilizar o setup() iremos escolhe a qual metodo queremos configurar | Utilizando o Returns() iremos informar ou dizer para o mock para utilizar o metodo ObterClienteVariados() quando
+									ele for chamado no teste, o metodo ObterClienteVariados() está utilizado o bogus para criação de uma massa de dados. E estamos utilizando fixtures para ter um melhor aproveitamento e organização na hora 
+									de realizar a massa de dados na qual nossos testes iram utilizar.
+								

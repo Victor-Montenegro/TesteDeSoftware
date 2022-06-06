@@ -1,0 +1,82 @@
+﻿using System.Linq;
+using System.Threading;
+using Features.Clientes;
+using MediatR;
+using Moq;
+using Xunit;
+
+namespace Features.Tests._05___Mock
+{
+    [Collection(nameof(ClienteBogusCollection))]
+    public class ClienteServiceTests
+    {
+        private ClienteFixtureBogusTests _fixtureBogusTests;
+
+        public ClienteServiceTests(ClienteFixtureBogusTests fixtureBogusTests)
+        {
+            _fixtureBogusTests = fixtureBogusTests;
+        }
+
+        [Fact(DisplayName = "Adicionar cliente com sucesso")]
+        [Trait("Categoria", "Client Service Mock Test")]
+        public void ClienteService_Adicionar_DeveExecutarComSucesso()
+        {
+            //Arrange 
+            Cliente cliente = _fixtureBogusTests.GerarClienteValido();
+            var clienteRepository = new Mock<IClienteRepository>();
+            var imediator = new Mock<IMediator>();
+            ClienteService clienteService = new ClienteService(clienteRepository.Object, imediator.Object);
+
+            //Act
+            clienteService.Adicionar(cliente);
+
+            //Assert
+            Assert.True(cliente.EhValido());
+            clienteRepository.Verify(r => r.Adicionar(cliente), Times.Once);
+            imediator.Verify(r => r.Publish(It.IsAny<INotification>(), CancellationToken.None), Times.Once);
+        }
+
+        [Fact(DisplayName = "Tentar adicionar cliente invalido")]
+        [Trait("Categoria","Client Service Mock Test")]
+        public void ClienteService_Adicionar_DeveFalharQuandoClienteEstaInvalido()
+        {
+            //Arrange
+            Cliente cliente = _fixtureBogusTests.GerarClienteInvalido();
+
+            var clienteRepository = new Mock<IClienteRepository>();
+            var mediator = new Mock<IMediator>();
+
+            ClienteService clienteService = new ClienteService(clienteRepository.Object, mediator.Object);
+            
+            //Act
+            clienteService.Adicionar(cliente);
+            
+            //Assert
+            Assert.False(cliente.EhValido());
+            clienteRepository.Verify(cr => cr.Adicionar(cliente),Times.Never);
+            mediator.Verify(m => m.Publish(It.IsAny<INotification>(), CancellationToken.None), Times.Never);
+        }
+
+        [Fact(DisplayName = "Tentar buscar todos os clientes ativos")]
+        [Trait("Categoria", "Client Service Mock Test")]
+        public void ClienteService_BuscarTodos_DeveRetornarApenasClientesAtivos()
+        {
+            //Arrange 
+            var mediator = new Mock<IMediator>();
+            var clienteRepository = new Mock<IClienteRepository>();
+
+            clienteRepository.Setup(s => s.ObterTodos())
+                .Returns(_fixtureBogusTests.GerarClientesVariados());
+
+            ClienteService clienteService = new ClienteService(clienteRepository.Object, mediator.Object);
+
+            //Act
+            var cliente = clienteService.ObterTodosAtivos();
+
+            //Assert
+            clienteRepository.Verify(c => c.ObterTodos(),Times.Once);
+            Assert.True(cliente.Any());
+            Assert.False(cliente.Count(c => !c.Ativo) > 0);
+        }
+    }
+}

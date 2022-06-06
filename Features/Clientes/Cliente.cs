@@ -39,6 +39,12 @@ namespace Features.Clientes
             return DataCadastro < DateTime.Now.AddYears(-3) && Ativo;
         }
 
+        public Cliente SetDataNascimento(DateTime dataNascimento)
+        {
+            DataNascimento = dataNascimento;
+
+            return this;
+        }
         public void Inativar()
         {
             Ativo = false;
