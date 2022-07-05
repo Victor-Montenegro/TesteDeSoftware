@@ -45,6 +45,7 @@ namespace Features.Clientes
 
             return this;
         }
+        
         public void Inativar()
         {
             Ativo = false;
