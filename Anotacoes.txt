@@ -489,4 +489,12 @@ TOPICOS
 								} Ao utilizar o setup() iremos escolhe a qual metodo queremos configurar | Utilizando o Returns() iremos informar ou dizer para o mock para utilizar o metodo ObterClienteVariados() quando
 									ele for chamado no teste, o metodo ObterClienteVariados() está utilizado o bogus para criação de uma massa de dados. E estamos utilizando fixtures para ter um melhor aproveitamento e organização na hora 
 									de realizar a massa de dados na qual nossos testes iram utilizar.
-								
+									
+									
+									
+									
+				
+				1.8 Trabalhando com FluentAssertions
+					https://fluentassertions.com/
+					
+					

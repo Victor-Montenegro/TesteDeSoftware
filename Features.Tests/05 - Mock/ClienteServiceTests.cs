@@ -7,14 +7,14 @@ using Xunit;
 
 namespace Features.Tests._05___Mock
 {
-    [Collection(nameof(ClienteBogusCollection))]
+    [Collection(nameof(ClienteServiceFixtureTestsColletion))]
     public class ClienteServiceTests
     {
-        private ClienteFixtureBogusTests _fixtureBogusTests;
+        private ClienteServiceFixtureTests _clienteServiceFixtureTests;
 
-        public ClienteServiceTests(ClienteFixtureBogusTests fixtureBogusTests)
+        public ClienteServiceTests(ClienteServiceFixtureTests clienteServiceFixtureTests)
         {
-            _fixtureBogusTests = fixtureBogusTests;
+            _clienteServiceFixtureTests = clienteServiceFixtureTests;
         }
 
         [Fact(DisplayName = "Adicionar cliente com sucesso")]
@@ -22,7 +22,7 @@ namespace Features.Tests._05___Mock
         public void ClienteService_Adicionar_DeveExecutarComSucesso()
         {
             //Arrange 
-            Cliente cliente = _fixtureBogusTests.GerarClienteValido();
+            Cliente cliente = _clienteServiceFixtureTests.GerarClienteValido();
             var clienteRepository = new Mock<IClienteRepository>();
             var imediator = new Mock<IMediator>();
             ClienteService clienteService = new ClienteService(clienteRepository.Object, imediator.Object);
@@ -41,7 +41,7 @@ namespace Features.Tests._05___Mock
         public void ClienteService_Adicionar_DeveFalharQuandoClienteEstaInvalido()
         {
             //Arrange
-            Cliente cliente = _fixtureBogusTests.GerarClienteInvalido();
+            Cliente cliente = _clienteServiceFixtureTests.GerarClienteInvalido();
 
             var clienteRepository = new Mock<IClienteRepository>();
             var mediator = new Mock<IMediator>();
@@ -66,7 +66,7 @@ namespace Features.Tests._05___Mock
             var clienteRepository = new Mock<IClienteRepository>();
 
             clienteRepository.Setup(s => s.ObterTodos())
-                .Returns(_fixtureBogusTests.GerarClientesVariados());
+                .Returns(_clienteServiceFixtureTests.GerarClientesVariados());
 
             ClienteService clienteService = new ClienteService(clienteRepository.Object, mediator.Object);
 

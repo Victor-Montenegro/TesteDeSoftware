@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Bogus;
@@ -54,7 +55,10 @@ namespace Features.Tests._06___AutoMock
 
             return cliente;
         }
-        
+
+        public IEnumerable<Cliente> ObterClientes()
+            => GerarCliente(100);
+
         public void Dispose()
         {
         }
