@@ -12,10 +12,12 @@ namespace Features.Tests._06___AutoMock
     public class ClienteServiceAutoMockTests
     {
         private ClienteServiceAutoMockFixtureTests _clienteServiceAutoMockFixtureTests;
-
+        private readonly ClienteService _clienteService;
+        
         public ClienteServiceAutoMockTests(ClienteServiceAutoMockFixtureTests clienteServiceAutoMockFixtureTests)
         {
             _clienteServiceAutoMockFixtureTests = clienteServiceAutoMockFixtureTests;
+            _clienteService = _clienteServiceAutoMockFixtureTests.ObterClienteService();
         }
         
         [Fact(DisplayName = "Tentar salvar cliente valido")]
@@ -23,18 +25,15 @@ namespace Features.Tests._06___AutoMock
         public void Adicionar_ClienteValido_DeveAdicionarCliente()
         {
             //Arrange
-            var mediator = new Mock<IMediator>();
-            var clienteRepository = new Mock<IClienteRepository>();
             Cliente cliente = _clienteServiceAutoMockFixtureTests.GerarClienteValido();
-            ClienteService clienteService = new ClienteService(clienteRepository.Object, mediator.Object);
             
             //Act
-            clienteService.Adicionar(cliente);
+            _clienteService.Adicionar(cliente);
 
             //Assert
             Assert.Empty(cliente.ValidationResult.Errors);
-            clienteRepository.Verify(c => c.Adicionar(cliente),Times.Once);
-            mediator.Verify(i => i.Publish(It.IsAny<INotification>(),CancellationToken.None),Times.Once);
+            _clienteServiceAutoMockFixtureTests.AutoMocker.GetMock<IClienteRepository>().Verify(c => c.Adicionar(cliente),Times.Once);
+            _clienteServiceAutoMockFixtureTests.AutoMocker.GetMock<IMediator>().Verify(i => i.Publish(It.IsAny<INotification>(),CancellationToken.None),Times.Once);
         }
 
         [Fact(DisplayName = "Tentar salvar cliente invalido")]
@@ -42,18 +41,15 @@ namespace Features.Tests._06___AutoMock
         public void Adicionar_ClienteInvalido_NaoDeveAdicionarCliente()
         {
             //Arrange
-            var mediator = new Mock<IMediator>();
-            var clienteRepository = new Mock<IClienteRepository>();
-            Cliente cliente = _clienteServiceAutoMockFixtureTests.GerarClienteInvalido();
-            ClienteService clienteService = new ClienteService(clienteRepository.Object, mediator.Object);
+            var cliente = _clienteServiceAutoMockFixtureTests.GerarClienteInvalido();
             
             //Act
-            clienteService.Adicionar(cliente);
+            _clienteService.Adicionar(cliente);
 
             //Assert
             Assert.NotEmpty(cliente.ValidationResult.Errors);
-            clienteRepository.Verify(c => c.Adicionar(cliente),Times.Never);
-            mediator.Verify(m => m.Publish(It.IsAny<INotification>(), CancellationToken.None),Times.Never);
+            _clienteServiceAutoMockFixtureTests.AutoMocker.GetMock<IClienteRepository>().Verify(c => c.Adicionar(cliente),Times.Never);
+            _clienteServiceAutoMockFixtureTests.AutoMocker.GetMock<IMediator>().Verify(m => m.Publish(It.IsAny<INotification>(), CancellationToken.None),Times.Never);
         }
 
         [Fact(DisplayName = "Deve buscar apenas clientes ativos ")]
@@ -61,19 +57,17 @@ namespace Features.Tests._06___AutoMock
         public void ObterTodosAtivos_BuscarTodos_DeveRetornarApenasClientesAtivos()
         {
             //Arrange
-            var mediator = new Mock<IMediator>();
-            var clienteRepository = new Mock<IClienteRepository>();
-            ClienteService clienteService = new ClienteService(clienteRepository.Object, mediator.Object);
-            clienteRepository.Setup(c => c.ObterTodos())
+            
+            _clienteServiceAutoMockFixtureTests.AutoMocker.GetMock<IClienteRepository>().Setup(c => c.ObterTodos())
                 .Returns(_clienteServiceAutoMockFixtureTests.ObterClientes());
             
             //Act
-            List<Cliente> clientes = clienteService.ObterTodosAtivos().ToList();
+            List<Cliente> clientes = _clienteService.ObterTodosAtivos().ToList();
             
             //Assert
             Assert.True(clientes.Any());
             Assert.False(clientes.Count(c => !c.Ativo) > 0);
-            clienteRepository.Verify(c => c.ObterTodos(),Times.Once);
+            _clienteServiceAutoMockFixtureTests.AutoMocker.GetMock<IClienteRepository>().Verify(c => c.ObterTodos(),Times.Once);
         }
     }
 }

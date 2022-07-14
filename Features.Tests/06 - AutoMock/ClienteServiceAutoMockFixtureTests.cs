@@ -1,10 +1,10 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Bogus;
 using Bogus.DataSets;
 using Features.Clientes;
+using Moq.AutoMock;
 using Xunit;
 
 namespace Features.Tests._06___AutoMock
@@ -14,7 +14,9 @@ namespace Features.Tests._06___AutoMock
 
     public class ClienteServiceAutoMockFixtureTests : IDisposable
     {
-
+        public ClienteService ClienteService;
+        public AutoMocker AutoMocker;
+        
         private ICollection<Cliente> GerarCliente(int qnt)
         {
             var genero = new Faker().PickRandom<Name.Gender>();
@@ -49,7 +51,7 @@ namespace Features.Tests._06___AutoMock
         {
             Cliente cliente = GerarCliente(1).FirstOrDefault();
 
-            DateTime dataNascInvalido = new Faker().Date.Past(17, DateTime.Now.AddYears(-4));
+            DateTime dataNascInvalido = new Faker().Date.Past(17);
 
             cliente.SetDataNascimento(dataNascInvalido);
 
@@ -58,6 +60,14 @@ namespace Features.Tests._06___AutoMock
 
         public IEnumerable<Cliente> ObterClientes()
             => GerarCliente(100);
+
+        public ClienteService ObterClienteService()
+        {
+            AutoMocker = new();
+            ClienteService = AutoMocker.CreateInstance<ClienteService>();
+
+            return ClienteService;
+        }
 
         public void Dispose()
         {

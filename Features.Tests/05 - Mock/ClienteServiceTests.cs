@@ -22,9 +22,9 @@ namespace Features.Tests._05___Mock
         public void ClienteService_Adicionar_DeveExecutarComSucesso()
         {
             //Arrange 
-            Cliente cliente = _clienteServiceFixtureTests.GerarClienteValido();
-            var clienteRepository = new Mock<IClienteRepository>();
             var imediator = new Mock<IMediator>();
+            var clienteRepository = new Mock<IClienteRepository>();
+            Cliente cliente = _clienteServiceFixtureTests.GerarClienteValido();
             ClienteService clienteService = new ClienteService(clienteRepository.Object, imediator.Object);
 
             //Act
@@ -64,19 +64,18 @@ namespace Features.Tests._05___Mock
             //Arrange 
             var mediator = new Mock<IMediator>();
             var clienteRepository = new Mock<IClienteRepository>();
-
+            ClienteService clienteService = new ClienteService(clienteRepository.Object, mediator.Object);
+   
             clienteRepository.Setup(s => s.ObterTodos())
                 .Returns(_clienteServiceFixtureTests.GerarClientesVariados());
-
-            ClienteService clienteService = new ClienteService(clienteRepository.Object, mediator.Object);
-
+            
             //Act
             var cliente = clienteService.ObterTodosAtivos();
 
             //Assert
-            clienteRepository.Verify(c => c.ObterTodos(),Times.Once);
             Assert.True(cliente.Any());
             Assert.False(cliente.Count(c => !c.Ativo) > 0);
+            clienteRepository.Verify(c => c.ObterTodos(),Times.Once);
         }
     }
 }

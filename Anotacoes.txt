@@ -1,3 +1,9 @@
+DICIONARIO DA AULA #P1
+    
+    Classes que contem muita dependencia: Quando temos a situação onde a nossa classes necessita de muita dependencia, isso é uma sinal onde devemos realizar a verificação que se é mesmo
+    necessario essa quantidade de depedencia, se aquela class não está fugindo do proprosito original da construção dela, se a mesma não está resolvendo mais problemas do que devia resolver.
+
+
 TOPICOS
 
 	Frameworks ---> Escrever os testes 
@@ -492,9 +498,20 @@ TOPICOS
 									
 									
 									
-									
-				
-				1.8 Trabalhando com FluentAssertions
+                1.8 AutoMock
+                    Podemos ter situações onde ao realizar a criações dos nossos casos de testes, ter classes que podem corter N dependencia para instancia-las, o papel do autoMock e justamente realizar e resolver de forma
+                    automatica e eficiente as dependencias daquela classe.
+                    
+                    Realizando a automatização dos nossos mocks pelo proprio framework do MOQ: MOQ.AutoMock				
+                    
+                    PASSOS:
+                        1 - Devemos instanciar a class AutoMock
+                                EX.: var autoMock = new AutoMock();
+				        2 - Utilizando o metedo CreateInstance<YourClass>() para resolver todas as depedencia da class;
+				                EX.: var clientService = autoMock.CreateInstance<ClientService>();
+				        3 - Para utilizar as dependencias daquela class, basta utilizar GetMock<TheDependenceForClass>(), e atraves dessa funcionalidade utilizar todas as ferramentas que ja aprendemos no topico 1.7
+				                EX.>: clientService.GetMock<IClientRepository>().Verify(c => c.Save(cliente),Times.Once);
+				1.9 Trabalhando com FluentAssertions
 					https://fluentassertions.com/
 					
 					
