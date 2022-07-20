@@ -3,6 +3,8 @@ DICIONARIO DA AULA #P1
     Classes que contem muita dependencia: Quando temos a situação onde a nossa classes necessita de muita dependencia, isso é uma sinal onde devemos realizar a verificação que se é mesmo
     necessario essa quantidade de depedencia, se aquela class não está fugindo do proprosito original da construção dela, se a mesma não está resolvendo mais problemas do que devia resolver.
 
+    Testes de Unidade: Não e a preocupação deu um teste de unidade se ele vai demorar muito ou não ao realizar o que ele deve fazer, mas sim garantir o que deve
+    ser esperado.
 
 TOPICOS
 
@@ -511,7 +513,54 @@ TOPICOS
 				                EX.: var clientService = autoMock.CreateInstance<ClientService>();
 				        3 - Para utilizar as dependencias daquela class, basta utilizar GetMock<TheDependenceForClass>(), e atraves dessa funcionalidade utilizar todas as ferramentas que ja aprendemos no topico 1.7
 				                EX.>: clientService.GetMock<IClientRepository>().Verify(c => c.Save(cliente),Times.Once);
+
+
 				1.9 Trabalhando com FluentAssertions
 					https://fluentassertions.com/
 					
+					Utilizar o Fluent Assertions e uma forma alternativa para realizar os Asserts dos nossos casos de testes
 					
+					Utilizando  extenções como Should() para realizar os Asserts necessarios.
+					
+					Utilizando algumas funcionalidades do framework Fluent Assertions
+					    
+					    Quando queremos realizar uma validação de um bool
+					        EX.:
+					               bool result = cliente.EhValido();
+					               
+					               result.Should().BeTrue();
+					    
+					    Quando queremos realizar validações com um array onde ele deve ter um tamanho especifico
+					    
+					        EX.:
+                                bool result = cliente.EhValido();
+ 					            
+ 					            cliente.ValidationResult.Errors.Should().HaveCount(0);
+ 					            
+                        Quando queremos realizar validações com um array onde ele deve ter um tamanho igual ou maior
+					    
+					        EX.:
+                                bool result = cliente.EhValido();
+ 					            
+ 					            cliente.ValidationResult.Errors.Should().HaveCountGreaterOrEqualTo(1);
+ 					            
+ 					    Quando estamos realizando validações, podemos concatenar com outras validações Utilizazndo o .And,
+ 					    nesse exemplo vou realizar a concatenação com a funcao HaveCountGraterOrEqualTo() e OnlyhaveUniqueItems(), onde
+ 					    realiza a validação da existencia de itens repetidos.
+ 					            
+ 					           var clientes = _clienteService.ObterTodosAtivos();
+ 					           
+ 					           clientes.Should().HaveCountGraterOrEqualTo(1).And.OnlyhaveUniqueItems();
+ 					    
+ 					    
+ 					    Uma das principais funcionalidades dele é poder agregar em testes de integração.
+ 					    Podendo ate valida o tempo de conexão entre o banco de dados
+ 					        EX.:
+ 					            _clienteService.ExecutionTimeOf(c => c.ObterTodosAtivos)
+ 					                .BeLessOrEqualTo(50.Mileseconds());
+ 					                
+ 					    Não podemos esquece que todas as funcoes de validação sempre tem o because, onde voce ira informar
+ 					    o por que da validação ter dado errado.
+ 					           EX.:
+ 					                
+ 					                clientes.Should().NotContain(n => !n.Ativo,"Todos os clientes devem ser ativos");
