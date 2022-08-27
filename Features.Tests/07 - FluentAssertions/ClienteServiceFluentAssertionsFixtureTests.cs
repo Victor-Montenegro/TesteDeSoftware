@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Bogus;
 using Bogus.DataSets;
+using Bogus.Extensions.Brazil;
 using Features.Clientes;
 using Moq;
 using Moq.AutoMock;

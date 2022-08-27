@@ -1,0 +1,131 @@
+TDD - Test Driven Development
+
+	Escrever o teste antes do codigo?
+	
+Modelo de Desenvolvimento "Tradicinal"
+	
+	
+		Requisitos
+		
+			Design
+				Desenho da arquitetura, UX Design, fluxo de navegacao
+				
+				Codificacao  
+					Entregar as funcionalidades 
+					
+					testes
+					
+						Implementação 
+	
+	
+	Utilizando essa abordagem, o tempo dedicado ao teste sempre será
+	minimo pelo fato de está literalamente a um passo antes da implementação,
+	desso modo tudo que foi desenvolvido pode ser que tenha um retrabalho ou ate mesmo
+	ter que refazer todos os requisitos novamente, se caso de tempo de realizar algum teste.
+	
+												LINHA DO TEMPO
+	<------------------------------------------------------------------------------------------->
+					T-Dev								Encontrar Bug			Resolver Bug
+		<--------------------------------><------------------------------><--------------------->
+		 ^- bug introduzido               ^-Bug encontrado
+		 
+
+Utilizando testes durante o desenvolvimento
+	
+	Com essa abordagem, o desenvolvimento será feito em pequenos espaço tempo, pois a cada parte será introduzido
+	e realizado um caso de teste daquilo que foi desenvolvido
+	
+				LINHA DO TEMPO
+	<------------------------------------->
+		T-Dev		T-busca		T-Corrigir
+	<----------><-------><---------->
+	^-Bug in	^-Bug en 
+	
+	
+	A finalidade dessa abordagem não e criar softwares 100 livres de bugs, mas utilizar praticas e meios de encontrar
+	os erros rapidamentes e consertalos de maneira mais rapida e eficiente.
+	
+	
+	As tres leis do TDD
+		
+		1. Voce nao pode escrever nenhum codigo ate ter escrito
+		um teste que detecte uma possivel falha
+		
+		2. Voce nao pode escrever mais testes de unidade do que o suficiente
+		para detectar a falha - nao compilar e nao ter efeito
+			OBS: Deve ser construido testes mais objetivos e diretos, devemos
+			lembrar que casos de testes tambem sao codigo e devem sofrer
+			manutencoes
+		
+		3. Voce nao pode escrever mais codigo do que o suficiente para passar
+		nos testes.
+			OBS: Cada caso deve validar aquilo que está escrito no caso, caso queira
+			realizar mais cenarios deve criar outro caso de teste.
+	
+	
+	
+	Babys Steps -
+	
+		E endicado para desenvolvedores que estao inciando na pratica do TDD
+		
+		E utilizado quando nao se tem muita confiaça sobre codigo a ser escrito e testado
+		
+		Nao existe uma pratica exata sobre a utilizacao baby steps, a recomendação
+		e fazer um processo por vez, identificar as necessidades avaliar o cenario e continuar
+	
+	
+	
+	EX
+		
+			public class Exemplo
+			{
+				public void MetodoTeste()
+				{
+					TTTTTTTTTTTT
+					TTTTTTTTTTTT <-----------------------   Teste 1 --> Foi criado o teste para validar um parte da regra de negocio informada, e foi desenvolvido aquilo que o o caso de teste esta testando
+					TTTTTTTTTTTT
+					
+					
+					XXXXXXXXXXXX
+					XXXXXXXXXXXX <-----------------------   Teste 2 --> Apos ter realizado a criacao de um caso de teste e desenvolvido o codigo para aquele caso, foi pensando mais um caso de teste para aquela regra de negocio e desenvolvido logo em seguida o que aquele caso de teste foi feito
+					XXXXXXXXXXXX
+				}
+			}
+			
+			
+	
+	Dicas para comeca com TDD
+		
+		Pratique os baby steps e respeito as 3 leis doTDD
+		
+		saiba exatamente o que precisa entregar antes de comecar
+		
+		Nao deixe para descobrir a regra de negocio durante a codificacao
+		
+		Tenha uma lista deanotacoes ou uma documentacao clara sempre a mao
+		
+		minta! No "green" o teste so precisa passar,depois utilize mocks
+		
+		Mantenha os testes simples
+		
+		Apos a escrita de alguns testes, analise a possibilidade de reaproveitamento de objetos
+		
+		Saiba quando usar TDD, nem sempre e vantajos
+	
+	
+	Teste driven Design?
+		
+		O conceito de TDD pode confundir, nao e sobre testes e sim sobre
+		escrever codigo com um bom design.( codigo escrito da forma certa
+		e facil de testar
+		
+		Escrever testes depois do codigo tambem ajuda, mas pode ocasionar retrabalho
+		caso seja necessario modificar um codigo para possibilitar o teste.
+
+	
+	Leituras indicadas
+		Test-Driven Development - Maurcio Anche
+		Test-Driven Development - Kent Beck
+		Growing Object-Oriented software - Guided by Tests
+		Practical test-driven development using c# 7
+		

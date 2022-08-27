@@ -1,4 +1,4 @@
-DICIONARIO DA AULA #P1
+DICIONARIO DA AULA / DICAS #P1
     
     Classes que contem muita dependencia: Quando temos a situação onde a nossa classes necessita de muita dependencia, isso é uma sinal onde devemos realizar a verificação que se é mesmo
     necessario essa quantidade de depedencia, se aquela class não está fugindo do proprosito original da construção dela, se a mesma não está resolvendo mais problemas do que devia resolver.
@@ -6,6 +6,11 @@ DICIONARIO DA AULA #P1
     Testes de Unidade: Não e a preocupação deu um teste de unidade se ele vai demorar muito ou não ao realizar o que ele deve fazer, mas sim garantir o que deve
     ser esperado.
 
+    Skip de Teste : Podemos realizar a fulga/escapa de um teste por algum motivo usando => [fact(Skip = "Teste sendo skipado por motivos")]
+    
+    
+    IOutputHelper: Poder ter a visualizacao de erros esperados em um caso de Teste: Utilizando o IOutputHelper, podemos informar as saidas de um determinado caso de teste
+            esse exemplo está na aula 07 - FluentAssertions
 TOPICOS
 
 	Frameworks ---> Escrever os testes 
@@ -564,3 +569,40 @@ TOPICOS
  					           EX.:
  					                
  					                clientes.Should().NotContain(n => !n.Ativo,"Todos os clientes devem ser ativos");
+ 					                
+                2.0 Realizando o skip de um test 
+                    Em algum momento dos nossos testes iremos teremo que "escapa" de algum teste, por algum motivo, nova versao,
+                    algum caso complemente especifico
+                    
+                    Quando houver essa situalção podemos passar um parametro chamado Skip n annotation [Fact]
+                        Ex.:
+                            [Fact(DisplayName = "Teste de skip"), Skip = "Nao irá passar por motivos de nova versão sendo aplicada"]                            
+                            public void Teste_NaoEstaPassando_VersaoNovaNaoCompativel()
+                
+                2.1 Executar seus testes via DLL/Console
+                    Em casos onde voce se depare em situações onde não vai ter alguma IDE para realizar a execução de seus testes, podemos
+                    realizar a instalação de um pacote para utilizar comandos e executa o XUnit
+                    
+                        Pacote: xunit.runner.console | deve ter o SDK dotnet instalado
+                        DOCUMENTACAO: https://docs.microsoft.com/pt-br/visualstudio/test/vstest-console-options?view=vs-2022
+                        
+                        1 PASSO: Para realizar a execução de seus testes e necessario executa a dll daquele projeto 
+                        
+                        2 PASSO: Para acessar a dll, geralmente é localizada na pasta debug do devido projeto
+                                
+                                EX.:
+                                    no terminal chegue no ate a pasta  : cd Features.Tests\bin\Debug\netcoreapp3.1>
+                        3 PASSO : Utilizando o comando dotnet vstest dll do projeto com os test
+                                EX.:
+                                        dotnet vstest Feature.Tests.dll
+                
+                
+                2.2 Code Coverage
+                    COde Coverage realiza a cobertura do seu codigo com base dos testes de unidade que foram criados, dando
+                    uma porcentagem de quanto seu codigo está "testado"  
+                        Existe um ideal de cobertura de testes de código?
+				
+					
+					Ferramentas gratuitas para realizar cobertura
+						https://github.com/OpenCover/opencover
+					

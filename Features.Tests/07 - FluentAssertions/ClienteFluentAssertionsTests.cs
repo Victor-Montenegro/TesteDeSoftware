@@ -1,6 +1,8 @@
+using System.Linq;
 using Features.Clientes;
 using FluentAssertions;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace Features.Tests._07___FluentAssertions
 {
@@ -8,10 +10,13 @@ namespace Features.Tests._07___FluentAssertions
     public class ClienteFluentAssertionsTests
     {
         private ClienteServiceFluentAssertionsFixtureTests _assertionsFixture;
+        private ITestOutputHelper _outputHelper;
         
-        public ClienteFluentAssertionsTests(ClienteServiceFluentAssertionsFixtureTests assertionsFixture)
+        public ClienteFluentAssertionsTests(ClienteServiceFluentAssertionsFixtureTests assertionsFixture,
+                                            ITestOutputHelper outputHelper)
         {
             _assertionsFixture = assertionsFixture;
+            _outputHelper = outputHelper;
         }
 
         [Fact(DisplayName = "O cliente criado deve ser valido")]
@@ -30,6 +35,7 @@ namespace Features.Tests._07___FluentAssertions
         }
 
         [Fact(DisplayName = "O Cliente criado deve ser invalido")]
+        [Trait("Categoria","Fluent Assertions Cliente Tests")]
         public void Cliente_NovoCliente_ClienteDeveSerInvalido()
         {
             //Arrange
@@ -41,6 +47,8 @@ namespace Features.Tests._07___FluentAssertions
             //Assert
             result.Should().BeFalse();
             cliente.ValidationResult.Errors.Should().HaveCountGreaterOrEqualTo(1);
+            
+            _outputHelper.WriteLine($"Foram encontrados {cliente.ValidationResult.Errors.Count()} erros nesse teste");
         }
     }
 }

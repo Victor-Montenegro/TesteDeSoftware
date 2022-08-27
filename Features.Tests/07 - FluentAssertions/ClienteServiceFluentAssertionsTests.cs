@@ -78,7 +78,7 @@ namespace Features.Tests._07___FluentAssertions
 
             clientes.Should()
                 .NotContain(n => !n.Ativo,"Todos os clientes devem ser ativos");
-            
+
             _assertionsFixture.AutoMocker.GetMock<IClienteRepository>()
                 .Verify(c => c.ObterTodos(),Times.Once);
 
