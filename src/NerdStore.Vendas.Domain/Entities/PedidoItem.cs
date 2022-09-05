@@ -1,4 +1,5 @@
 using System;
+using NerdStore.Vendas.Domain.Helpers;
 
 namespace NerdStore.Vendas.Domain.Entities
 {
@@ -15,30 +16,45 @@ namespace NerdStore.Vendas.Domain.Entities
             ProdutoId = produtoId;
             Quantidade = quantidade;
             ValorUnitario = valorUnitario;
+            
+            ChecandoQuantidade();
         }
 
         public PedidoItem AtualizarQuantidade(int quantidade)
         {
             Quantidade += quantidade;
             
-            ChecandoQuantidade();
-            
             return this;
         }
 
-        private void ChecandoQuantidade()
+        public void ChecandoQuantidade()
         {
-            int quantityMaxProduct = 15;
-            int quantityMinimumProduct = 1;
-            var isInRange = Quantidade >= quantityMinimumProduct && Quantidade <= quantityMaxProduct;
-
-            if (isInRange)
-                throw new Exception($"A quantidade do item {Nome} deve ser entre 1 a 15");
+            var isInRange = Quantidade >= PedidoItemHelper.MIN_UNIDADE_PRODUTO 
+                            && 
+                            Quantidade <= PedidoItemHelper.MAX_UNIDADE_PRODUTO;
+        
+            if (!isInRange)
+                throw new DomainException($"A quantidade do item {Nome} deve ser entre " +
+                                          $"{PedidoItemHelper.MIN_UNIDADE_PRODUTO} a {PedidoItemHelper.MAX_UNIDADE_PRODUTO}");
         }
 
         public decimal CalcularValor()
         {
             return Quantidade * ValorUnitario;
         }
+
+        // public override bool EhValido()
+        // {
+        //     var validator = new PedidoItemValidator();
+        //
+        //     var validation = validator.Validate(this);
+        //
+        //     if (validation.IsValid)
+        //         return true;
+        //
+        //     ValidationResult = validation;
+        //
+        //     return false;
+        // }
     }
 }

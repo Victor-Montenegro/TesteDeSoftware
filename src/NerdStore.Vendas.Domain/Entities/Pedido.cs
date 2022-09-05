@@ -8,7 +8,7 @@ namespace NerdStore.Vendas.Domain.Entities
     public class Pedido : BaseEntity
     {
         private List<PedidoItem> _pedidoItems;
-        
+
         public Guid ClienteId { get; private set; }
         public decimal ValorTotal { get; private set; }
         public PedidoStatus Status { get; private set; }
@@ -25,8 +25,10 @@ namespace NerdStore.Vendas.Domain.Entities
                 pedidoItem = AtualizarItemExistente(pedidoItem);
 
             _pedidoItems.Add(pedidoItem);
-            
-            Status = PedidoStatus.Rascunho; 
+
+            _pedidoItems.ForEach(x => x.ChecandoQuantidade());
+
+            Status = PedidoStatus.Rascunho;
 
             AtualizarValorTotal();
 
@@ -35,8 +37,7 @@ namespace NerdStore.Vendas.Domain.Entities
 
         private PedidoItem AtualizarItemExistente(PedidoItem pedidoItem)
         {
-            if (!_pedidoItems.Any(a => a.Id == pedidoItem.Id))
-                throw new Exception($"O item {pedidoItem.Nome} não existe para ser atualizado");
+            ChecarItemPedidoExistente(pedidoItem);
 
             int quantidade = pedidoItem.Quantidade;
             var pedidoItemExistente = _pedidoItems.FirstOrDefault(p => p.ProdutoId == pedidoItem.ProdutoId);
@@ -45,9 +46,23 @@ namespace NerdStore.Vendas.Domain.Entities
 
             _pedidoItems.Remove(pedidoItemExistente);
 
-            // AdicionarItem(pedidoItemExistente);
-
             return pedidoItemExistente;
+        }
+
+        public Pedido AtualizarItem(PedidoItem pedidoItem)
+        {
+            ChecarItemPedidoExistente(pedidoItem);
+            
+            pedidoItem.ChecandoQuantidade();
+
+            var pedidoExistente = _pedidoItems.FirstOrDefault(x => x.ProdutoId == pedidoItem.ProdutoId);
+
+            _pedidoItems.Remove(pedidoExistente);
+            _pedidoItems.Add(pedidoItem);
+            
+            AtualizarValorTotal();
+            
+            return this;
         }
 
         private void AtualizarValorTotal()
@@ -70,11 +85,29 @@ namespace NerdStore.Vendas.Domain.Entities
                 {
                     ClienteId = clienteId
                 };
-                
+
                 pedido.TornarRascunho();
 
                 return pedido;
             }
         }
+
+        public void ChecarItemPedidoExistente(PedidoItem pedidoItem)
+        {
+            if (!_pedidoItems.Any(a => a.Id == pedidoItem.Id))
+                throw new DomainException($"O item {pedidoItem.Nome} não existe para ser atualizado");
+        }
+        // public override bool EhValido()
+        // {
+        //     var validator = new PedidoValidator();
+        //     var validation = validator.Validate(this);
+        //
+        //     if (validation.IsValid)
+        //         return true;
+        //
+        //     ValidationResult = validation;
+        //
+        //     return false;
+        // }
     }
-} 
+}
