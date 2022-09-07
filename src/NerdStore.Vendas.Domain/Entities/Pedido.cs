@@ -19,16 +19,17 @@ namespace NerdStore.Vendas.Domain.Entities
             _pedidoItems = new List<PedidoItem>();
         }
 
+        private bool ValidandoPedidoItemExistente(PedidoItem pedidoItem)
+            => _pedidoItems.Any(a => a.ProdutoId == pedidoItem.ProdutoId);
+
         public Pedido AdicionarItem(PedidoItem pedidoItem)
         {
-            if (_pedidoItems.Any(a => a.Id == pedidoItem.Id))
+            if (ValidandoPedidoItemExistente(pedidoItem))
                 pedidoItem = AtualizarItemExistente(pedidoItem);
 
             _pedidoItems.Add(pedidoItem);
 
-            _pedidoItems.ForEach(x => x.ChecandoQuantidade());
-
-            Status = PedidoStatus.Rascunho;
+            TornarRascunho();
 
             AtualizarValorTotal();
 
@@ -44,6 +45,8 @@ namespace NerdStore.Vendas.Domain.Entities
 
             pedidoItemExistente.AtualizarQuantidade(quantidade);
 
+            pedidoItemExistente.ChecandoQuantidade();
+
             _pedidoItems.Remove(pedidoItemExistente);
 
             return pedidoItemExistente;
@@ -52,16 +55,16 @@ namespace NerdStore.Vendas.Domain.Entities
         public Pedido AtualizarItem(PedidoItem pedidoItem)
         {
             ChecarItemPedidoExistente(pedidoItem);
-            
+
             pedidoItem.ChecandoQuantidade();
 
             var pedidoExistente = _pedidoItems.FirstOrDefault(x => x.ProdutoId == pedidoItem.ProdutoId);
 
             _pedidoItems.Remove(pedidoExistente);
             _pedidoItems.Add(pedidoItem);
-            
+
             AtualizarValorTotal();
-            
+
             return this;
         }
 
@@ -77,6 +80,36 @@ namespace NerdStore.Vendas.Domain.Entities
             Status = PedidoStatus.Rascunho;
         }
 
+        public void ChecarItemPedidoExistente(PedidoItem pedidoItem)
+        {
+            if (!_pedidoItems.Any(a => a.Id == pedidoItem.Id))
+                throw new DomainException($"O item {pedidoItem.Nome} não existe para ser atualizado");
+        }
+
+        public Pedido RemoveItem(PedidoItem pedidoItem)
+        {
+            ChecarItemPedidoExistente(pedidoItem);
+
+            _pedidoItems.Remove(pedidoItem);
+            
+            AtualizarValorTotal();
+            
+            return this;
+        }
+        
+        // public override bool EhValido()
+        // {
+        //     var validator = new PedidoValidator();
+        //     var validation = validator.Validate(this);
+        //
+        //     if (validation.IsValid)
+        //         return true;
+        //
+        //     ValidationResult = validation;
+        //
+        //     return false;
+        // }
+        
         public static class PedidoFactory
         {
             public static Pedido CriarPedidoRascunho(Guid clienteId)
@@ -91,23 +124,5 @@ namespace NerdStore.Vendas.Domain.Entities
                 return pedido;
             }
         }
-
-        public void ChecarItemPedidoExistente(PedidoItem pedidoItem)
-        {
-            if (!_pedidoItems.Any(a => a.Id == pedidoItem.Id))
-                throw new DomainException($"O item {pedidoItem.Nome} não existe para ser atualizado");
-        }
-        // public override bool EhValido()
-        // {
-        //     var validator = new PedidoValidator();
-        //     var validation = validator.Validate(this);
-        //
-        //     if (validation.IsValid)
-        //         return true;
-        //
-        //     ValidationResult = validation;
-        //
-        //     return false;
-        // }
     }
 }
