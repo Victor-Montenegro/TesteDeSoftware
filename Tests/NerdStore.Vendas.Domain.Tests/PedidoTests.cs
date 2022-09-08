@@ -102,7 +102,7 @@ namespace NerdStore.Vendas.Domain.Tests
             //Act & Assert
             Assert.Throws<DomainException>(() => pedido.AtualizarItem(pedidoItem));
         }
-        
+
         [Fact(DisplayName = "Atualizando um item de pedido")]
         [Trait("Pedido", "Vendas - Pedido")]
         public void Pedido_AtualizarPedidoItemValido_DeveAtualizarQuantidade()
@@ -113,16 +113,16 @@ namespace NerdStore.Vendas.Domain.Tests
             var pedidoItem = new PedidoItem(produtoId, "Samsung S22", 2000, 2);
             var pedidoItemExistente = new PedidoItem(produtoId, "Samsung S22", 2000, 10);
             var novaQuantidade = pedidoItemExistente.Quantidade;
-            
+
             pedido.AdicionarItem(pedidoItem);
-            
+
             //Act
             pedido.AtualizarItem(pedidoItemExistente);
-            
+
             // Assert
-            Assert.Equal(novaQuantidade,pedido.PedidoItem.FirstOrDefault(x => x.ProdutoId == produtoId).Quantidade);
+            Assert.Equal(novaQuantidade, pedido.PedidoItem.FirstOrDefault(x => x.ProdutoId == produtoId).Quantidade);
         }
-        
+
         [Fact(DisplayName = "Adicionando um item de pedido existente com quantidade acima do permitido")]
         [Trait("Pedido", "Vendas - Pedido")]
         public void Pedido_AdicionandoPedidoItemExistenteComQuantidadeAcimaDoPermitido_DeveRetornarException()
@@ -131,10 +131,11 @@ namespace NerdStore.Vendas.Domain.Tests
             var pedido = Pedido.PedidoFactory.CriarPedidoRascunho(Guid.NewGuid());
             var produtoId = Guid.NewGuid();
             var pedidoItem = new PedidoItem(produtoId, "Samsung S22", 2000, 2);
-            var pedidoItemExistente = new PedidoItem(produtoId, "Samsung S22", 2000, PedidoItemHelper.MAX_UNIDADE_PRODUTO);
+            var pedidoItemExistente =
+                new PedidoItem(produtoId, "Samsung S22", 2000, PedidoItemHelper.MAX_UNIDADE_PRODUTO);
 
             pedido.AdicionarItem(pedidoItem);
-            
+
             //Act & Assert
             Assert.Throws<DomainException>(() => pedido.AdicionarItem(pedidoItemExistente));
         }
@@ -146,7 +147,7 @@ namespace NerdStore.Vendas.Domain.Tests
             //Arrange
             var pedido = Pedido.PedidoFactory.CriarPedidoRascunho(Guid.NewGuid());
             var pedidoItem = new PedidoItem(Guid.NewGuid(), "Item nao existente", 10, 10);
-            
+
             //Act & Assert
             Assert.Throws<DomainException>(() => pedido.AtualizarItem(pedidoItem));
         }
@@ -162,11 +163,12 @@ namespace NerdStore.Vendas.Domain.Tests
             var pedidoItemCarregador = new PedidoItem(produtoId, "Carregador iphone", 500, 1);
             var pedidoItemCarregadorAtualizado = new PedidoItem(produtoId, "Carregador iphone", 500, 3);
             var valorTotalEsperado = pedidoItemIphone.Quantidade * pedidoItemIphone.ValorUnitario +
-                                     pedidoItemCarregadorAtualizado.Quantidade * pedidoItemCarregadorAtualizado.ValorUnitario;
-            
+                                     pedidoItemCarregadorAtualizado.Quantidade *
+                                     pedidoItemCarregadorAtualizado.ValorUnitario;
+
             pedido.AdicionarItem(pedidoItemIphone);
             pedido.AdicionarItem(pedidoItemCarregador);
-            
+
             //Act
             pedido.AtualizarItem(pedidoItemCarregadorAtualizado);
 
@@ -199,13 +201,123 @@ namespace NerdStore.Vendas.Domain.Tests
 
             pedido.AdicionarItem(pedidoItemSamsung);
             pedido.AdicionarItem(pedidoItemCarregador);
-            
+
             //Act
             pedido.RemoveItem(pedidoItemCarregador);
-            
+
             //Assert
-            Assert.Equal(valorTotalEsperado,pedido.ValorTotal);
+            Assert.Equal(valorTotalEsperado, pedido.ValorTotal);
             Assert.True(pedido.PedidoItem.Count(x => x.ProdutoId != produtoId) == 0);
+        }
+
+        [Fact]
+        public void Pedido_AplicarVoucherValido_NaoDeveRetornarError()
+        {
+            //Arrange
+            var voucher = Voucher.VoucherFactory.CriarVoucherValido();
+            var pedido = Pedido.PedidoFactory.CriarPedidoRascunho(Guid.NewGuid());
+
+            //Act
+            pedido.AplicarVoucher(voucher);
+
+            //Assert
+            Assert.True(pedido.ValidationResult.IsValid);
+            Assert.Empty(pedido.ValidationResult.Errors);
+        }
+        
+        [Fact]
+        public void Pedido_AplicarVoucherInvalido_DeveRetornarError()
+        {
+            //Arrange
+            var pedido = Pedido.PedidoFactory.CriarPedidoRascunho(Guid.NewGuid());
+            var voucher = new Voucher(Guid.NewGuid(),
+                false,
+                true,
+                string.Empty,
+                -10,
+                TipoDescontoVoucher.Valor,
+                null,
+                null,
+                0);
+
+
+            //Act
+            pedido.AplicarVoucher(voucher);
+
+            //Assert
+            Assert.False(pedido.ValidationResult.IsValid);
+            Assert.NotEmpty(pedido.ValidationResult.Errors);
+        }
+
+        [Fact]
+        [Trait(""," ")]
+        public void Pedido_AplicarVoucherValidoTipoValor_DeveAplicarDesconto()
+        {
+            //Arrange
+            var voucher = new Voucher(Guid.NewGuid(),
+                true,
+                false,
+                "OFF15",
+                2,
+                TipoDescontoVoucher.Valor,
+                15,
+                null,
+                2);
+            decimal valorDescontoEsperado = 0;
+            decimal descontoEsperado = voucher.ValorDesconto.Value;
+            var pedido = Pedido.PedidoFactory.CriarPedidoRascunho(Guid.NewGuid());
+            var pedidoItemSamsung = new PedidoItem(Guid.NewGuid(), "Samsung Z Flip 4", 5400, 1);
+            var pedidoItemCarregador = new PedidoItem(Guid.NewGuid(), "Carregador samsung", 400, 1);
+
+            pedido.AdicionarItem(pedidoItemSamsung);
+            pedido.AdicionarItem(pedidoItemCarregador);
+            valorDescontoEsperado = pedido.ValorTotal - voucher.ValorDesconto.Value;
+            
+            //Act
+            pedido.AplicarVoucher(voucher);
+
+            //Assert
+            Assert.True(pedido.VoucherUtilizado);
+            Assert.True(pedido.ValidationResult.IsValid);
+            Assert.Empty(pedido.ValidationResult.Errors);
+            Assert.Equal(descontoEsperado, pedido.Desconto);
+            Assert.Equal(valorDescontoEsperado, pedido.ValorTotal);
+        }
+        
+        [Fact]
+        [Trait("","")]
+        public void Pedido_AplicarVoucherValidoTipoPercentual_DeveAplicarDesconto()
+        {
+            //Arrange
+            var voucher = new Voucher(Guid.NewGuid(),
+                true,
+                false,
+                "OFF15",
+                2,
+                TipoDescontoVoucher.Porcentual,
+                null,
+                15,
+                2);
+            decimal descontoEsperado = 0;
+            decimal valorDescontoEsperado = 0;
+            var pedido = Pedido.PedidoFactory.CriarPedidoRascunho(Guid.NewGuid());
+            var pedidoItemSamsung = new PedidoItem(Guid.NewGuid(), "Iphone 14 PRO MAX", 15600, 1);
+            var pedidoItemCarregador = new PedidoItem(Guid.NewGuid(), "Carregador por indução ", 999, 1);
+
+            pedido.AdicionarItem(pedidoItemSamsung);
+            pedido.AdicionarItem(pedidoItemCarregador);
+            descontoEsperado = (pedido.ValorTotal * voucher.PercentualDesconto.Value) / 100;
+            valorDescontoEsperado = pedido.ValorTotal - descontoEsperado;
+            
+            //Act
+            pedido.AplicarVoucher(voucher);
+
+            //Assert
+            Assert.True(pedido.VoucherUtilizado);
+            Assert.True(pedido.ValidationResult.IsValid);
+            Assert.Empty(pedido.ValidationResult.Errors);
+            Assert.Equal(descontoEsperado, pedido.Desconto);
+            Assert.Equal(valorDescontoEsperado, pedido.ValorTotal);
         }
     }
 }

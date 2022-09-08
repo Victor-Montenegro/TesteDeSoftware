@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using NerdStore.Vendas.Domain.Enums;
+using NerdStore.Vendas.Domain.Validatories;
 
 namespace NerdStore.Vendas.Domain.Entities
 {
@@ -10,8 +11,11 @@ namespace NerdStore.Vendas.Domain.Entities
         private List<PedidoItem> _pedidoItems;
 
         public Guid ClienteId { get; private set; }
+        public Voucher Voucher { get; private set; }
+        public decimal Desconto { get; private set; }
         public decimal ValorTotal { get; private set; }
         public PedidoStatus Status { get; private set; }
+        public bool VoucherUtilizado { get; private set; }
         public IReadOnlyCollection<PedidoItem> PedidoItem => _pedidoItems;
 
         protected Pedido()
@@ -91,25 +95,64 @@ namespace NerdStore.Vendas.Domain.Entities
             ChecarItemPedidoExistente(pedidoItem);
 
             _pedidoItems.Remove(pedidoItem);
+
+            AtualizarValorTotal();
+
+            return this;
+        }
+
+        public bool ValidarPedido()
+        {
+            var validator = new PedidoValidator();
+            ValidationResult = validator.Validate(this);
+
+            return ValidationResult.IsValid;
+        }
+
+        public bool AplicarVoucher(Voucher voucher)
+        {
+            voucher.ValidarVoucher();
+            ValidationResult = voucher.ValidationResult;
+
+            if (ValidationResult.IsValid)
+            {
+                Voucher = voucher;
+                VoucherUtilizado = true;
+
+                AplicarDesconto();
+            }
+
+            return ValidationResult.IsValid;
+        }
+
+        public void AplicarDesconto()
+        {
+            if (!VoucherUtilizado)
+                return;
             
             AtualizarValorTotal();
             
-            return this;
+            if(Voucher.Tipo == TipoDescontoVoucher.Valor)
+                CalcularDescontoValor();
+            
+            if (Voucher.Tipo == TipoDescontoVoucher.Porcentual)
+                CalcularDescontoPercentual();
+
+            ValorTotal -= Desconto;
         }
-        
-        // public override bool EhValido()
-        // {
-        //     var validator = new PedidoValidator();
-        //     var validation = validator.Validate(this);
-        //
-        //     if (validation.IsValid)
-        //         return true;
-        //
-        //     ValidationResult = validation;
-        //
-        //     return false;
-        // }
-        
+
+        private void CalcularDescontoPercentual()
+        {
+            if (Voucher.PercentualDesconto.HasValue)
+                Desconto = (ValorTotal * Voucher.PercentualDesconto.Value) / 100;
+        }
+
+        private void CalcularDescontoValor()
+        {
+            if (Voucher.ValorDesconto.HasValue)
+                Desconto = Voucher.ValorDesconto.Value;
+        }
+
         public static class PedidoFactory
         {
             public static Pedido CriarPedidoRascunho(Guid clienteId)

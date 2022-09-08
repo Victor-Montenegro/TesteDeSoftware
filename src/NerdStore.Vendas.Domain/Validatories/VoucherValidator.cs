@@ -48,7 +48,7 @@ namespace NerdStore.Vendas.Domain.Validatories
 
             When(v => v.Tipo == TipoDescontoVoucher.Porcentual, () =>
             {
-                RuleFor(v => v.PorcentualDesconto)
+                RuleFor(v => v.PercentualDesconto)
                     .NotNull()
                     .WithMessage(PorcentualDescontoErrorMsg)
                     .GreaterThan(0)

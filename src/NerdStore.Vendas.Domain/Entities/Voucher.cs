@@ -14,7 +14,7 @@ namespace NerdStore.Vendas.Domain.Entities
         public DateTime DataValidade { get; private set ; }
         public decimal? ValorDesconto { get; private set ; }
         public TipoDescontoVoucher Tipo { get; private set ; }
-        public decimal? PorcentualDesconto { get; private set ; }
+        public decimal? PercentualDesconto { get; private set ; }
 
         public Voucher(Guid id, bool ativo, bool utilizado, string descricao, int quantidadeDiasDataValidade, TipoDescontoVoucher tipo, decimal? valorDesconto,  decimal? porcentualDesconto, int quantidade)
         {
@@ -25,7 +25,7 @@ namespace NerdStore.Vendas.Domain.Entities
             Descricao = descricao;
             Quantidade = quantidade;
             ValorDesconto = valorDesconto;
-            PorcentualDesconto = porcentualDesconto;
+            PercentualDesconto = porcentualDesconto;
 
             AdicionarDiasDataValidade(quantidadeDiasDataValidade);
         }
