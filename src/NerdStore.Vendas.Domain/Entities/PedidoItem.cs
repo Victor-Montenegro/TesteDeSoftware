@@ -1,4 +1,5 @@
 using System;
+using NerdStore.Vendas.Core.Data;
 using NerdStore.Vendas.Domain.Helpers;
 
 namespace NerdStore.Vendas.Domain.Entities

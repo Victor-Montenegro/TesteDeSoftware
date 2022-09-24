@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using FluentAssertions;
 using FluentAssertions.Execution;
@@ -210,7 +211,8 @@ namespace NerdStore.Vendas.Domain.Tests
             Assert.True(pedido.PedidoItem.Count(x => x.ProdutoId != produtoId) == 0);
         }
 
-        [Fact]
+        [Fact(DisplayName = "Aplicando voucher valido no pedido")]
+        [Trait("Pedido","Vendas - Pedido")]
         public void Pedido_AplicarVoucherValido_NaoDeveRetornarError()
         {
             //Arrange
@@ -225,7 +227,8 @@ namespace NerdStore.Vendas.Domain.Tests
             Assert.Empty(pedido.ValidationResult.Errors);
         }
         
-        [Fact]
+        [Fact(DisplayName = "Aplicando voucher invalido no pedido")]
+        [Trait("Pedido","Vendas - Pedido")]
         public void Pedido_AplicarVoucherInvalido_DeveRetornarError()
         {
             //Arrange
@@ -249,8 +252,8 @@ namespace NerdStore.Vendas.Domain.Tests
             Assert.NotEmpty(pedido.ValidationResult.Errors);
         }
 
-        [Fact]
-        [Trait(""," ")]
+        [Fact(DisplayName = "Aplicando voucher com tipo de desconto Valor")]
+        [Trait("Pedido","Vendas - Pedido")]
         public void Pedido_AplicarVoucherValidoTipoValor_DeveAplicarDesconto()
         {
             //Arrange
@@ -284,8 +287,8 @@ namespace NerdStore.Vendas.Domain.Tests
             Assert.Equal(valorDescontoEsperado, pedido.ValorTotal);
         }
         
-        [Fact]
-        [Trait("","")]
+        [Fact(DisplayName = "Aplicando voucher com tipo de desconto percentual")]
+        [Trait("Pedido","Vendas - Pedido")]
         public void Pedido_AplicarVoucherValidoTipoPercentual_DeveAplicarDesconto()
         {
             //Arrange
@@ -318,6 +321,54 @@ namespace NerdStore.Vendas.Domain.Tests
             Assert.Empty(pedido.ValidationResult.Errors);
             Assert.Equal(descontoEsperado, pedido.Desconto);
             Assert.Equal(valorDescontoEsperado, pedido.ValorTotal);
+        }
+
+        [Fact]
+        [Trait("", "")]
+        public void Pedido_VoucherComDescontoMaiorPedido_ValorTotalPedidoDeveSerZero()
+        {
+            //Arrange
+            var voucher = new Voucher(Guid.NewGuid(),
+                true,
+                false,
+                "OFF1001",
+                2,
+                TipoDescontoVoucher.Valor,
+                1001,
+                null,
+                2);
+            var pedido = Pedido.PedidoFactory.CriarPedidoRascunho(Guid.NewGuid());
+            var pedidoItemSamsung = new PedidoItem(Guid.NewGuid(), "Samsung S10", 1000, 1);
+
+            pedido.AdicionarItem(pedidoItemSamsung);
+            
+            //Act
+            pedido.AplicarVoucher(voucher);
+
+            //Assert
+            Assert.Equal(0,pedido.ValorTotal);
+        }
+        
+        [Fact]
+        [Trait("", "")]
+        public void Pedido_AdicionandoPedidoItemComVoucherAtivo_DeveAtualizarValorTotal()
+        {
+            //Arrange
+            decimal valorTotalEsperado = 0;
+            var voucher = Voucher.VoucherFactory.CriarVoucherValido();
+            var pedido = Pedido.PedidoFactory.CriarPedidoRascunho(Guid.NewGuid());
+            var pedidoItemSamsung = new PedidoItem(Guid.NewGuid(), "Samsung S10", 1000, 1);
+            var pedidoItemCarregador = new PedidoItem(Guid.NewGuid(), "Carregador samsung", 500, 1);
+
+            pedido.AplicarVoucher(voucher);
+            pedido.AdicionarItem(pedidoItemSamsung);
+            
+            //Act
+            pedido.AdicionarItem(pedidoItemCarregador);
+
+            //Assert
+            valorTotalEsperado = pedido.PedidoItem.Sum(p => p.CalcularValor()) - voucher.ValorDesconto.Value;
+            Assert.Equal(valorTotalEsperado,pedido.ValorTotal);
         }
     }
 }

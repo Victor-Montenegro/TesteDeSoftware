@@ -6,10 +6,7 @@
 
     <ItemGroup>
       <PackageReference Include="FluentValidation" Version="11.2.1" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\..\NerdStore.Vendas.Core\NerdStore.Vendas.Core.csproj" />
+      <PackageReference Include="MediatR" Version="10.0.1" />
     </ItemGroup>
 
 </Project>

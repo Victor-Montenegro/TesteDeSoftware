@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\NerdStore.Vendas.Core\NerdStore.Vendas.Core.csproj" />
+      <ProjectReference Include="..\src\NerdStore.Vendas.Domain\NerdStore.Vendas.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="FluentValidation" Version="11.2.1" />
+    </ItemGroup>
+
+</Project>

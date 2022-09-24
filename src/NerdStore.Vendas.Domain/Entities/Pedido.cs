@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using NerdStore.Vendas.Core.Data;
+using NerdStore.Vendas.Core.Interfaces;
 using NerdStore.Vendas.Domain.Enums;
 using NerdStore.Vendas.Domain.Validatories;
 
 namespace NerdStore.Vendas.Domain.Entities
 {
-    public class Pedido : BaseEntity
+    public class Pedido : BaseEntity,IAggregateRoot
     {
         private List<PedidoItem> _pedidoItems;
 
@@ -77,6 +79,8 @@ namespace NerdStore.Vendas.Domain.Entities
             decimal valorAtualizado = PedidoItem.Sum(s => s.CalcularValor());
 
             ValorTotal = valorAtualizado;
+            
+            AplicarDesconto();
         }
 
         public void TornarRascunho()
@@ -125,12 +129,10 @@ namespace NerdStore.Vendas.Domain.Entities
             return ValidationResult.IsValid;
         }
 
-        public void AplicarDesconto()
+        private void AplicarDesconto()
         {
             if (!VoucherUtilizado)
                 return;
-            
-            AtualizarValorTotal();
             
             if(Voucher.Tipo == TipoDescontoVoucher.Valor)
                 CalcularDescontoValor();
@@ -138,7 +140,9 @@ namespace NerdStore.Vendas.Domain.Entities
             if (Voucher.Tipo == TipoDescontoVoucher.Porcentual)
                 CalcularDescontoPercentual();
 
-            ValorTotal -= Desconto;
+            decimal CalculoValorTotalComDesconto = ValorTotal - Desconto;
+            
+            ValorTotal = CalculoValorTotalComDesconto < 0 ? 0 : CalculoValorTotalComDesconto;
         }
 
         private void CalcularDescontoPercentual()
