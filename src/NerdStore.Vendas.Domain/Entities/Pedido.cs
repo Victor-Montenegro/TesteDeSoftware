@@ -25,7 +25,7 @@ namespace NerdStore.Vendas.Domain.Entities
             _pedidoItems = new List<PedidoItem>();
         }
 
-        private bool ValidandoPedidoItemExistente(PedidoItem pedidoItem)
+        public bool ValidandoPedidoItemExistente(PedidoItem pedidoItem)
             => _pedidoItems.Any(a => a.ProdutoId == pedidoItem.ProdutoId);
 
         public Pedido AdicionarItem(PedidoItem pedidoItem)
@@ -88,9 +88,9 @@ namespace NerdStore.Vendas.Domain.Entities
             Status = PedidoStatus.Rascunho;
         }
 
-        public void ChecarItemPedidoExistente(PedidoItem pedidoItem)
+        private void ChecarItemPedidoExistente(PedidoItem pedidoItem)
         {
-            if (!_pedidoItems.Any(a => a.Id == pedidoItem.Id))
+            if (!_pedidoItems.Any(a => a.ProdutoId == pedidoItem.ProdutoId))
                 throw new DomainException($"O item {pedidoItem.Nome} não existe para ser atualizado");
         }
 

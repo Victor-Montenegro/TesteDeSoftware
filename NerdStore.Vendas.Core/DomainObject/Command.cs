@@ -1,9 +1,9 @@
 using FluentValidation.Results;
 using MediatR;
 
-namespace NerdStore.Vendas.Core.Messages
+namespace NerdStore.Vendas.Core.Data
 {
-    public abstract class Request<T> : Message, IRequest<T> where T : Response
+    public abstract class Command<T> : IRequest<T>
     {
         public ValidationResult ValidationResult { get; set; }
 

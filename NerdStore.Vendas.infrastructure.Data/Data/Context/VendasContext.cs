@@ -15,12 +15,14 @@ namespace NerdStore.Vendas.infrastructure.Data.Data.Context
             _mediator = mediator;
         }
 
-        public async Task Commit()
+        public async Task<bool> Commit()
         {
             var isSave = await SaveChangesAsync() > 0;
 
             if (isSave)
                 _mediator.PublishEvent(this);
+
+            return isSave;
         }
 
         public async Task Rollback()

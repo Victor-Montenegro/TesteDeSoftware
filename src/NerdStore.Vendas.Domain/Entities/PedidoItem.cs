@@ -11,8 +11,9 @@ namespace NerdStore.Vendas.Domain.Entities
         public int Quantidade { get; private set; }
         public decimal ValorUnitario { get; private set; }
 
-        public PedidoItem(Guid produtoId,string nome, decimal valorUnitario, int quantidade)
+        public PedidoItem(Guid id,Guid produtoId,string nome, decimal valorUnitario, int quantidade)
         {
+            Id = id;
             Nome = nome;
             ProdutoId = produtoId;
             Quantidade = quantidade;

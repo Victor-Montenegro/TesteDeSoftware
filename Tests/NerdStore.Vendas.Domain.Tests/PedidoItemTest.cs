@@ -12,7 +12,7 @@ namespace NerdStore.Vendas.Domain.Tests
         public void PedidoItem_AdicininarUnidadeItemPedidoAcimaPermitido_DeveRetornaException()
         {
             //Arrange & Act & Assert
-            Assert.Throws<DomainException>(() => new PedidoItem(Guid.NewGuid(),
+            Assert.Throws<DomainException>(() => new PedidoItem(Guid.NewGuid(),Guid.NewGuid(),
                 "iphone 10",
                 300,
                 PedidoItemHelper.MAX_UNIDADE_PRODUTO + 1));
@@ -23,7 +23,7 @@ namespace NerdStore.Vendas.Domain.Tests
         public void PedidoItem_AdicininarUnidadeItemPedidoAbaixoPermitido_DeveRetornaException()
         {
             //Arrange & Act & Assert
-            Assert.Throws<DomainException>(() => new PedidoItem(Guid.NewGuid(),
+            Assert.Throws<DomainException>(() => new PedidoItem(Guid.NewGuid(),Guid.NewGuid(),
                 "iphone 10",
                 300,
                 PedidoItemHelper.MIN_UNIDADE_PRODUTO - 1));

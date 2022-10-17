@@ -1,11 +1,11 @@
 using System;
 using FluentValidation;
-using NerdStore.Vendas.Core.Messages;
+using NerdStore.Vendas.Core.Data;
 using NerdStore.Vendas.Domain.Helpers;
 
 namespace NerdStore.Vendas.Application.Commands
 {
-    public class AdicionarItemPedidoRequest : Request<AdicionarItemPedidoResponse>
+    public class AdicionarItemPedidoCommand : Command<bool>
     {
         public string Name { get;  set; }
         public decimal Valor { get;  set; }
@@ -13,7 +13,7 @@ namespace NerdStore.Vendas.Application.Commands
         public Guid ProdutoId { get;  set; }
         public int Quantidade { get;  set; }
 
-        public AdicionarItemPedidoRequest(Guid clienteId, Guid produtoId, string name, decimal valor,  int quantidade)
+        public AdicionarItemPedidoCommand(Guid clienteId, Guid produtoId, string name, decimal valor,  int quantidade)
         {
             Name = name;
             Valor = valor;
@@ -32,7 +32,7 @@ namespace NerdStore.Vendas.Application.Commands
         }
     }
 
-    public class AdicionarItemPedidoValidator : AbstractValidator<AdicionarItemPedidoRequest>
+    public class AdicionarItemPedidoValidator : AbstractValidator<AdicionarItemPedidoCommand>
     {
         public static string IdClienteErrorMsg => "Id do cliente inválido";
         public static string IdProdutoErrorMsg => "Id do produto inválido";
@@ -62,7 +62,7 @@ namespace NerdStore.Vendas.Application.Commands
                 .WithMessage(NomeErrorMsg);
             
             RuleFor(p => p.Quantidade)
-                .GreaterThan(PedidoItemHelper.MIN_UNIDADE_PRODUTO)
+                .GreaterThanOrEqualTo(PedidoItemHelper.MIN_UNIDADE_PRODUTO)
                 .WithMessage(QuantidadeMinErrorMsg)
                 .LessThanOrEqualTo(PedidoItemHelper.MAX_UNIDADE_PRODUTO)
                 .WithMessage(QuantidadeMaxErrorMsg);

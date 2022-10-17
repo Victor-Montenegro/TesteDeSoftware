@@ -4,7 +4,7 @@ namespace NerdStore.Vendas.Core.Data
 {
     public interface IUnitOfWork
     {
-        Task Commit();
+        Task<bool>  Commit();
         Task Rollback();
     }
 }

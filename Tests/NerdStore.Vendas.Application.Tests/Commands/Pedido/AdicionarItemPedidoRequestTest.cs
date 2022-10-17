@@ -13,7 +13,7 @@ namespace NerdStore.Vendas.Application.Tests.Pedido
         public void AdicionarItemPedidoRequest_AdicionarRequestValido_NaoDeveRetornarError()
         {
             //Arrange
-            var request = new AdicionarItemPedidoRequest(Guid.NewGuid(),Guid.NewGuid(), "Teste request",100,2);
+            var request = new AdicionarItemPedidoCommand(Guid.NewGuid(),Guid.NewGuid(), "Teste request",100,2);
 
             //Act
             request.EhValido();
@@ -29,7 +29,7 @@ namespace NerdStore.Vendas.Application.Tests.Pedido
         {
             //Arrange
             var quantidadeErrosEsperados = 5;
-            var request = new AdicionarItemPedidoRequest(Guid.Empty, Guid.Empty, string.Empty, PedidoItemHelper.MIN_UNIDADE_PRODUTO - 1, 0);
+            var request = new AdicionarItemPedidoCommand(Guid.Empty, Guid.Empty, string.Empty, PedidoItemHelper.MIN_UNIDADE_PRODUTO - 1, 0);
 
             //Act
             request.EhValido();
@@ -51,7 +51,7 @@ namespace NerdStore.Vendas.Application.Tests.Pedido
         public void AdicionarItemPedidoRequest_AdicionarItemComQuantidadeAcimaPermitido_DeveRetornarError()
         {
             //Arrange
-            var request = new AdicionarItemPedidoRequest(Guid.NewGuid(),Guid.NewGuid(), "Teste request",100,PedidoItemHelper.MAX_UNIDADE_PRODUTO + 1);
+            var request = new AdicionarItemPedidoCommand(Guid.NewGuid(),Guid.NewGuid(), "Teste request",100,PedidoItemHelper.MAX_UNIDADE_PRODUTO + 1);
             //Act
             request.EhValido();
             
